@@ -8,26 +8,25 @@ class KanjiToInt
     千
   )
 
+  def self.ketanumber(str, keta_kanji, keta_num)
+    if str.include?(keta_kanji)
+      a, str = str.split(keta_kanji)
+      i = NUM.index(a) || 1
+      [i * keta_num, str]
+    else
+      [0, str]
+    end
+  end
+
   def self.convert(str)
     ans = 0
-    if str.include?("千")
-      a, str = str.split("千")
-      i = NUM.index(a) || 1
-      ans += i * 1000
-    end
 
-    if str.include?("百")
-      a, str = str.split("百")
-      i = NUM.index(a) || 1
-      ans += i * 100
-    end
-
-    if str.include?("十")
-      a, str = str.split("十")
-      i = NUM.index(a) || 1
-      ans += i * 10
-    end
-
+    a, str = ketanumber(str, '千', 1000)
+    ans += a
+    a, str = ketanumber(str, '百', 100)
+    ans += a
+    a, str = ketanumber(str, '十', 10)
+    ans += a
     ans += NUM.index(str) || 0
     ans
   end
@@ -40,5 +39,7 @@ class TestSample < Test::Unit::TestCase
     assert_equal 11, KanjiToInt.convert('十一')
     assert_equal 1110, KanjiToInt.convert('千百十')
     assert_equal 1111, KanjiToInt.convert('千百十一')
+    # assert_equal 2345, KanjiToInt.convert('二千三百四十五')
+    # assert_equal 12345, KanjiToInt.convert('一万二千三百四十五')
   end
 end
