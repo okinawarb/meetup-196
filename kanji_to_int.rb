@@ -1,5 +1,38 @@
 require 'test/unit'
 
+module K2I
+  FOO = {}
+  '〇一二三四五六七八九'.each_char.with_index{|c,i|
+    FOO[c] = { type: :n, value: i }
+  }
+  '十百千'.each_char.with_index{|c,i|
+    FOO[c] = { type: :level1, value: 10**(i+1) }
+  }
+  '万億兆'.each_char.with_index{|c,i|
+    FOO[c] = { type: :level2, value: 10000**(i+1) }
+  }
+  def self.parse str
+    ans = 0
+    tmp1 = nil
+    tmp2 = nil
+    str.each_char do |c|
+      code = FOO[c]
+      break unless code
+      case code[:type]
+      when :n
+        tmp1 = (tmp1||0) * 10 + code[:value]
+      when :level1
+        tmp2 = (tmp2||0) + (tmp1||1) * code[:value]
+        tmp1 = nil
+      when :level2
+        ans += (tmp1||tmp2 ? (tmp2||0) + (tmp1||0) : 1) * code[:value]
+        tmp1 = tmp2 = nil
+      end
+    end
+    ans + (tmp2||0) + (tmp1||0)
+  end
+end
+
 class KanjiToInt
   NUM = %w(零 一 二 三 四 五 六 七 八 九).freeze
   LEVEL1 = %w(十 百 千)
@@ -21,6 +54,7 @@ class KanjiToInt
   end
 
   def self.convert(str)
+    return K2I.parse str
     ans = 0
 
     UNITS.each do |ketakanji, num|
