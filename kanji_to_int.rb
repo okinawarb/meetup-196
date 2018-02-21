@@ -1,6 +1,6 @@
 require 'test/unit'
 
-class Sample
+class KanjiToInt
   NUM = %w(零 一 二 三 四 五 六 七 八 九).freeze
   LEVEL1 = %w(
     十
@@ -35,10 +35,10 @@ end
 
 class TestSample < Test::Unit::TestCase
   def test_one
-    assert_equal 1, Sample.convert('一')
-    assert_equal 0, Sample.convert('零')
-    assert_equal 11, Sample.convert('十一')
-    assert_equal 1110, Sample.convert('千百十')
-    assert_equal 1111, Sample.convert('千百十一')
+    assert_equal 1, KanjiToInt.convert('一')
+    assert_equal 0, KanjiToInt.convert('零')
+    assert_equal 11, KanjiToInt.convert('十一')
+    assert_equal 1110, KanjiToInt.convert('千百十')
+    assert_equal 1111, KanjiToInt.convert('千百十一')
   end
 end
