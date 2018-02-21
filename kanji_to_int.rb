@@ -48,12 +48,12 @@ end
 
 class TestSample < Test::Unit::TestCase
   def test_万未満
-    assert_equal 1, KanjiToInt.convert('一')
     assert_equal 0, KanjiToInt.convert('零')
+    assert_equal 1, KanjiToInt.convert('一')
     assert_equal 11, KanjiToInt.convert('十一')
     assert_equal 1110, KanjiToInt.convert('千百十')
-    assert_equal 2000, KanjiToInt.convert('二千')
     assert_equal 1111, KanjiToInt.convert('千百十一')
+    assert_equal 2000, KanjiToInt.convert('二千')
     assert_equal 2345, KanjiToInt.convert('二千三百四十五')
   end
 
@@ -71,5 +71,10 @@ class TestSample < Test::Unit::TestCase
 
   def test_兆以上
     assert_equal 1_2345_0000_2345, KanjiToInt.convert('一兆二千三百四十五億二千三百四十五')
+  end
+
+  def test_コーナーケース
+    assert_equal 21, KanjiToInt.convert('二十一です。五千兆円欲しい')
+    assert_equal 123, KanjiToInt.convert('一二三')
   end
 end
