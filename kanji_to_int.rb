@@ -2,11 +2,13 @@ require 'test/unit'
 
 class KanjiToInt
   NUM = %w(零 一 二 三 四 五 六 七 八 九).freeze
-  LEVEL1 = %w(
-    十
-    百
-    千
-  )
+  LEVEL1 = %w(十 百 千)
+
+  UNITS = [
+    ['兆', 1_0000_0000_0000],
+    ['億', 1_0000_0000],
+    ['万', 1_0000]
+  ]
 
   def self.ketanumber(str, keta_kanji, keta_num)
     if str.include?(keta_kanji)
@@ -19,12 +21,16 @@ class KanjiToInt
   end
 
   def self.convert(str)
-    if str.include?('万')
-      a, b = str.split('万', 2)
-      parse_under_man(a) * 10000 + parse_under_man(b)
-    else
-      parse_under_man(str)
+    ans = 0
+
+    UNITS.each do |ketakanji, num|
+      if str.include?(ketakanji)
+        a, str = str.split(ketakanji, 2)
+        ans += parse_under_man(a) * num
+      end
     end
+
+    ans += parse_under_man(str)
   end
 
   def self.parse_under_man(str)
@@ -41,7 +47,7 @@ class KanjiToInt
 end
 
 class TestSample < Test::Unit::TestCase
-  def test_one
+  def test_万未満
     assert_equal 1, KanjiToInt.convert('一')
     assert_equal 0, KanjiToInt.convert('零')
     assert_equal 11, KanjiToInt.convert('十一')
@@ -49,9 +55,21 @@ class TestSample < Test::Unit::TestCase
     assert_equal 2000, KanjiToInt.convert('二千')
     assert_equal 1111, KanjiToInt.convert('千百十一')
     assert_equal 2345, KanjiToInt.convert('二千三百四十五')
+  end
+
+  def test_万以上_億未満
     assert_equal 1_0000, KanjiToInt.convert('一万')
     assert_equal 1_2345, KanjiToInt.convert('一万二千三百四十五')
     assert_equal 21_2345, KanjiToInt.convert('二十一万二千三百四十五')
     assert_equal 1000_2345, KanjiToInt.convert('一千万二千三百四十五')
+  end
+
+  def test_億以上_兆未満
+    assert_equal 1_0000_2345, KanjiToInt.convert('一億二千三百四十五')
+    assert_equal 21_1122_2345, KanjiToInt.convert('二十一億一千百二十二万二千三百四十五')
+  end
+
+  def test_兆以上
+    assert_equal 1_2345_0000_2345, KanjiToInt.convert('一兆二千三百四十五億二千三百四十五')
   end
 end
